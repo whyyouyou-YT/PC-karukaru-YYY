@@ -7,6 +7,9 @@ __pycache__/
 build/
 dist/
 
+# Inno Setup
+installer_dist/
+
 # 起動用vbs(Pythonの絶対パスを直書きしているため。S:\MY-life\実行ファイル\側で管理)
 実行ファイル/
 

@@ -43,6 +43,20 @@ Python環境なしで配布・起動できる単体exe（`dist/temp_cleaner.exe`
 
 3. `dist/temp_cleaner.exe` が生成される。このexe単体を配布すれば、Python環境の追加インストールなしに動作する（管理者権限が必要な項目はアプリ内のボタンからUAC昇格して都度実行する方式のまま、exeのマニフェスト自体はrequireAdministrator化していない）
 
+## インストーラーのビルド方法
+
+Inno Setup 6が必要（`winget install --id JRSoftware.InnoSetup -e`で導入可能）。
+
+1. 上記の手順で `dist/temp_cleaner.exe` をビルド済みにする
+2. `installer.iss` の `MyAppVersion` を必要に応じて更新する
+3. コンパイル
+
+   ```
+   "C:\Users\yuuma\AppData\Local\Programs\Inno Setup 6\ISCC.exe" installer.iss
+   ```
+
+4. `installer_dist\temp_cleaner-Setup-v<バージョン>.exe` が生成される。スタートメニュー登録・デスクトップアイコン任意作成・アンインストーラー付き
+
 ## 掃除対象
 
 **安全に消せるもの（既定でオン）**
@@ -98,6 +112,7 @@ python test_safety.py
 | `winutil.py` | ごみ箱 API・管理者権限・プロセス列挙・空き容量（ctypes のみ、外部依存なし） |
 | `static/` | UI（HTML / JS） |
 | `build.spec` | PyInstaller のビルド定義。単体exe化に使う |
+| `installer.iss` | Inno Setup のインストーラー定義 |
 
 ## 対象を追加するとき
 
