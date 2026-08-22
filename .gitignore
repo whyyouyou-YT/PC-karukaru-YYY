@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# PyInstaller
+build/
+dist/
+
+# 起動用vbs(Pythonの絶対パスを直書きしているため。S:\MY-life\実行ファイル\側で管理)
+実行ファイル/
+
+# エディタ・OS
+.vscode/
+.idea/
+Thumbs.db
