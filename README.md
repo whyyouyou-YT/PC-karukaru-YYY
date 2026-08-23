@@ -12,6 +12,12 @@ Windows の一時ファイル・キャッシュ削除ツール。Microsoft PC Ma
 | 勝手に判断される | チェックは自分で操作。危険寄りの項目は既定でオフ |
 | 毎回チェックし直すのが面倒 | 前回の選択を `%LOCALAPPDATA%\PC-karukaru-YYY\settings.json` に記憶。起動中アプリで強制オフになった項目も「起動中以外を選択」ボタンでワンクリック復元できる |
 
+## 表示テーマ
+
+ヘッダーの「ライトモードにする / ダークモードにする」ボタンで切り替え可能。
+選択は `%LOCALAPPDATA%\PC-karukaru-YYY\settings.json` に保存され、次回起動時に
+自動で反映される（既定はダーク）。ヘッダーにはバージョン番号も表示される。
+
 ## 起動
 
 ```
@@ -57,6 +63,41 @@ Inno Setup 6が必要（`winget install --id JRSoftware.InnoSetup -e`で導入�
    ```
 
 4. `installer_dist\PC-karukaru-YYY-Setup-v<バージョン>.exe` が生成される。スタートメニュー登録・デスクトップアイコン任意作成・アンインストーラー付き
+
+## アップデーターのビルド方法（既にインストール済みの人向け）
+
+フルインストーラー（約20MB）を落とし直さず、本体exeだけを最新版に差し替える軽量ツール。
+pywebview 等は使わず標準ライブラリのみなので `dist/PC-karukaru-YYY.exe` よりずっと軽い。
+
+```
+pyinstaller updater.spec --noconfirm
+```
+
+`dist/PC-karukaru-YYY-Updater.exe` が生成される。GitHub Release に本体exe・インストーラーと
+並べてアップロードする。
+
+**使い方（利用者側）**: `PC-karukaru-YYY-Updater.exe` をそのまま実行するだけ。インストール先は
+レジストリのアンインストール情報から自動検出し、GitHub の最新Releaseから本体exeだけを
+ダウンロードして上書きする。実行中は置き換えできないため、事前にアプリを閉じておくこと。
+書き込み権限が無い場合は自動的に管理者権限で再起動する。
+
+### リポジトリがPrivateの間のアクセス（知り合いに使ってもらう場合）
+
+このリポジトリは現在Privateのため、GitHub Releases APIへの匿名アクセスは404になる。
+知り合いにアップデーターを使ってもらうには、読み取り専用スコープのアクセストークンを
+発行して渡す必要がある。
+
+1. GitHubの [Settings > Developer settings > Fine-grained tokens](https://github.com/settings/tokens?type=beta) で新規発行
+   - Repository access: `Only select repositories` → `PC-karukaru-YYY` のみ選択
+   - Permissions: `Contents` を `Read-only` に設定（それ以外は付与しない）
+   - 有効期限は必要に応じて短めに設定（失効すればいつでも同じ手順で再発行できる）
+2. 発行されたトークン文字列（`github_pat_...`）を、渡したい相手にDiscord DM等の安全な経路で共有する
+3. 相手は `PC-karukaru-YYY-Updater.exe` と同じフォルダに `token.txt` という名前のテキストファイルを作り、
+   トークンだけを1行貼り付けて保存してから実行する（環境変数 `PC_KARUKARU_UPDATER_TOKEN` でも可）
+4. リポジトリを将来Publicにした場合は `token.txt` は不要になる（無くてもそのまま動く）
+
+トークンはリポジトリ単位・読み取り専用でスコープを絞ってあるため、漏れても実害は小さいが、
+不要になったらGitHub側でいつでも失効させること。
 
 ## 掃除対象
 
@@ -109,10 +150,12 @@ python test_safety.py
 | `scanner.py` | 並列スキャン。リパースポイントを除外し、削除単位（Item）を組み立てる |
 | `cleaner.py` | 削除の実行と安全装置 |
 | `winutil.py` | ごみ箱 API・管理者権限・プロセス列挙・空き容量（ctypes のみ、外部依存なし） |
-| `settings.py` | 選択状態（チェック希望）の永続化。`%LOCALAPPDATA%\PC-karukaru-YYY\settings.json` に保存 |
+| `settings.py` | 選択状態（チェック希望）・表示テーマの永続化。`%LOCALAPPDATA%\PC-karukaru-YYY\settings.json` に保存 |
+| `version.py` | アプリのバージョン定義（単一の参照元）。リリース時は `installer.iss` の `MyAppVersion` と手動で合わせる |
 | `static/` | UI（HTML / JS） |
 | `build.spec` | PyInstaller のビルド定義。単体exe化に使う |
 | `installer.iss` | Inno Setup のインストーラー定義 |
+| `updater.py` / `updater.spec` | 既存インストールを最新Releaseの本体exeに差し替える軽量アップデーター。標準ライブラリのみで完結 |
 
 ## 対象を追加するとき
 

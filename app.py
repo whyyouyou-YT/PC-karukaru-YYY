@@ -25,8 +25,10 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from cleaner import clean_target  # noqa: E402
 from scanner import CategoryResult, scan_all  # noqa: E402
-from settings import load_checked, save_checked  # noqa: E402
+from settings import load_checked, load_theme, save_checked  # noqa: E402
+from settings import save_theme as _save_theme  # noqa: E402
 from targets import Target, build_targets  # noqa: E402
+from version import APP_VERSION  # noqa: E402
 from winutil import (  # noqa: E402
     disk_usage,
     is_admin,
@@ -193,6 +195,8 @@ class Api:
             "disk": _disk(),
             "targets": [_target_payload(t) for t in _S.targets],
             "savedChecked": load_checked(),
+            "version": APP_VERSION,
+            "theme": load_theme(),
         }
         self.start_scan()
         return payload
@@ -203,6 +207,10 @@ class Api:
             return False
         sanitized = {str(k): bool(v) for k, v in checked.items()}
         return save_checked(sanitized)
+
+    def save_theme(self, theme: str) -> bool:
+        """ライト/ダークの表示テーマを永続化する。成功したかを返す。"""
+        return _save_theme(theme)
 
     def start_scan(self) -> bool:
         """バックグラウンドでスキャンを開始する。"""
@@ -246,14 +254,16 @@ def main() -> None:
         if relaunch_as_admin():
             return
 
+    # 前回のテーマに合わせた背景色にしておく（HTML読み込み前の一瞬のちらつき軽減）
+    bg = "#f4f5f7" if load_theme() == "light" else "#16171a"
     window = webview.create_window(
-        "PC-karukaru-YYY" + ("（管理者）" if is_admin() else ""),
+        f"PC-karukaru-YYY v{APP_VERSION}" + ("（管理者）" if is_admin() else ""),
         INDEX_HTML,
         js_api=Api(),
         width=980,
         height=760,
         min_size=(720, 560),
-        background_color="#16171a",
+        background_color=bg,
     )
     _S.window = window
     webview.start()
