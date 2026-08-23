@@ -10,6 +10,7 @@ Windows の一時ファイル・キャッシュ削除ツール。Microsoft PC Ma
 | スキャンが遅い | 起動と同時にスキャン開始。ルートフォルダ単位で並列処理し、実測 **0.7〜1.0 秒**（12カテゴリ・約37GB検出時） |
 | 何を消すのか分からない | 全項目のフルパス・サイズ・最終更新日を表示。クリックでエクスプローラーを開いて中身を確認できる |
 | 勝手に判断される | チェックは自分で操作。危険寄りの項目は既定でオフ |
+| 毎回チェックし直すのが面倒 | 前回の選択を `%LOCALAPPDATA%\PC-karukaru-YYY\settings.json` に記憶。起動中アプリで強制オフになった項目も「起動中以外を選択」ボタンでワンクリック復元できる |
 
 ## 起動
 
@@ -108,6 +109,7 @@ python test_safety.py
 | `scanner.py` | 並列スキャン。リパースポイントを除外し、削除単位（Item）を組み立てる |
 | `cleaner.py` | 削除の実行と安全装置 |
 | `winutil.py` | ごみ箱 API・管理者権限・プロセス列挙・空き容量（ctypes のみ、外部依存なし） |
+| `settings.py` | 選択状態（チェック希望）の永続化。`%LOCALAPPDATA%\PC-karukaru-YYY\settings.json` に保存 |
 | `static/` | UI（HTML / JS） |
 | `build.spec` | PyInstaller のビルド定義。単体exe化に使う |
 | `installer.iss` | Inno Setup のインストーラー定義 |
