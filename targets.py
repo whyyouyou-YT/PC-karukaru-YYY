@@ -16,7 +16,6 @@ from pathlib import Path
 
 LOCALAPPDATA = os.environ.get("LOCALAPPDATA", r"C:\Users\Default\AppData\Local")
 APPDATA = os.environ.get("APPDATA", r"C:\Users\Default\AppData\Roaming")
-USERPROFILE = os.environ.get("USERPROFILE", r"C:\Users\Default")
 PROGRAMDATA = os.environ.get("PROGRAMDATA", r"C:\ProgramData")
 WINDIR = os.environ.get("WINDIR", r"C:\Windows")
 
@@ -317,16 +316,6 @@ def build_targets() -> list[Target]:
             risk=RISK_CAUTION,
             default_on=False,
             kind="recycle_bin",
-        ),
-        Target(
-            key="downloads_old",
-            label="ダウンロードフォルダの古いファイル",
-            detail="90日以上前のファイル。中身を確認してから消してください。削除ではなくごみ箱送りなので復元できます。",
-            risk=RISK_CAUTION,
-            default_on=False,
-            min_age_hours=24 * 90,
-            to_trash=True,
-            roots=[Root(os.path.join(USERPROFILE, "Downloads"))],
         ),
     ]
 

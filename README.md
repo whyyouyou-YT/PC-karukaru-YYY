@@ -1,4 +1,4 @@
-# Temp Cleaner
+# PC-karukaru-YYY
 
 Windows の一時ファイル・キャッシュ削除ツール。Microsoft PC Manager の代替として作成。
 
@@ -18,15 +18,15 @@ python app.py            # 通常起動
 python app.py --admin    # 管理者権限で起動
 ```
 
-`S:\MY-life\実行ファイル\start-temp-cleaner.vbs`（コンソール非表示）からも起動できる。
-Windows Temp・Windows Update の残骸まで消すには管理者権限が必要（`start-temp-cleaner-admin.vbs`）。
+`S:\MY-life\実行ファイル\start-pc-karukaru-yyy.vbs`（コンソール非表示）からも起動できる。
+Windows Temp・Windows Update の残骸まで消すには管理者権限が必要（`start-pc-karukaru-yyy-admin.vbs`）。
 ※ `実行ファイル/` は `.gitignore` 対象（Python の絶対パスを直書きしているため）。環境を移したら作り直すこと。
 
 依存は `pywebview` のみ（`pip install -r requirements.txt`）。
 
 ## exeのビルド方法
 
-Python環境なしで配布・起動できる単体exe（`dist/temp_cleaner.exe`）を作る手順。
+Python環境なしで配布・起動できる単体exe（`dist/PC-karukaru-YYY.exe`）を作る手順。
 
 1. 依存パッケージをインストール
 
@@ -41,13 +41,13 @@ Python環境なしで配布・起動できる単体exe（`dist/temp_cleaner.exe`
    pyinstaller build.spec --noconfirm
    ```
 
-3. `dist/temp_cleaner.exe` が生成される。このexe単体を配布すれば、Python環境の追加インストールなしに動作する（管理者権限が必要な項目はアプリ内のボタンからUAC昇格して都度実行する方式のまま、exeのマニフェスト自体はrequireAdministrator化していない）
+3. `dist/PC-karukaru-YYY.exe` が生成される。このexe単体を配布すれば、Python環境の追加インストールなしに動作する（管理者権限が必要な項目はアプリ内のボタンからUAC昇格して都度実行する方式のまま、exeのマニフェスト自体はrequireAdministrator化していない）
 
 ## インストーラーのビルド方法
 
 Inno Setup 6が必要（`winget install --id JRSoftware.InnoSetup -e`で導入可能）。
 
-1. 上記の手順で `dist/temp_cleaner.exe` をビルド済みにする
+1. 上記の手順で `dist/PC-karukaru-YYY.exe` をビルド済みにする
 2. `installer.iss` の `MyAppVersion` を必要に応じて更新する
 3. コンパイル
 
@@ -55,7 +55,7 @@ Inno Setup 6が必要（`winget install --id JRSoftware.InnoSetup -e`で導入�
    "C:\Users\yuuma\AppData\Local\Programs\Inno Setup 6\ISCC.exe" installer.iss
    ```
 
-4. `installer_dist\temp_cleaner-Setup-v<バージョン>.exe` が生成される。スタートメニュー登録・デスクトップアイコン任意作成・アンインストーラー付き
+4. `installer_dist\PC-karukaru-YYY-Setup-v<バージョン>.exe` が生成される。スタートメニュー登録・デスクトップアイコン任意作成・アンインストーラー付き
 
 ## 掃除対象
 
@@ -75,9 +75,8 @@ Inno Setup 6が必要（`winget install --id JRSoftware.InnoSetup -e`で導入�
 - 開発ツールのキャッシュ（pip / npm / yarn / uv）
 - Steam ダウンロードの残骸（downloading / temp / depotcache）
 - ごみ箱
-- ダウンロードフォルダの 90 日以上前のファイル（**ごみ箱送り**。復元可能）
 
-履歴・Cookie・保存されたパスワード・インストール済みゲーム本体には触れない。
+履歴・Cookie・保存されたパスワード・インストール済みゲーム本体・ユーザーが作成したファイル（ダウンロードフォルダ等）には触れない。
 
 ## 安全装置
 
@@ -90,7 +89,6 @@ Inno Setup 6が必要（`winget install --id JRSoftware.InnoSetup -e`で導入�
 5. **部分削除をしない** — Temp 系は削除の直前にフォルダ内のロックを並列で調べ、使用中ファイルが 1 つでもあればフォルダごと見送る。PyInstaller 製アプリの展開先（`_MEI*`）などを半分だけ消してアプリを壊す事故を防ぐ。`_has_locked_file` は「ロックが無いと**確認できた**」ときだけ False を返す契約で、走査エラーや上限超過で調べ切れなかった場合は True（＝触らない）に倒す
 6. **起動中アプリの検出** — Chrome / Discord / Steam が動いていたら該当カテゴリのチェックを自動で外し、警告を表示する
 7. **強制解除はしない** — ロックされたファイルはスキップしてカウントするだけ（読み取り専用属性の解除のみ行う）
-8. **ユーザーの実ファイルはごみ箱送り** — ダウンロードフォルダの項目は完全削除ではなく `SHFileOperationW` でごみ箱へ
 
 ## テスト
 

@@ -1,4 +1,4 @@
-"""Temp Cleaner — Windows の一時ファイル・キャッシュ掃除ツール。
+"""PC-karukaru-YYY — Windows の一時ファイル・キャッシュ掃除ツール。
 
 pywebview のネイティブウィンドウ + ローカル HTML の構成。HTTP サーバーは立てず、
 JS からは `pywebview.api.*` で Python を直接呼ぶ。常駐せず、ウィンドウを閉じれば
@@ -238,7 +238,7 @@ def main() -> None:
             return
 
     window = webview.create_window(
-        "Temp Cleaner" + ("（管理者）" if is_admin() else ""),
+        "PC-karukaru-YYY" + ("（管理者）" if is_admin() else ""),
         INDEX_HTML,
         js_api=Api(),
         width=980,
