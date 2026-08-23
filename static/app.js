@@ -3,7 +3,8 @@
 const state = {
   targets: [],
   results: {},      // key -> スキャン結果
-  checked: {},      // key -> bool
+  checked: {},      // key -> bool（実際の表示。起動中アプリで強制OFFになりうる）
+  preferred: {},     // key -> bool（ユーザーの希望。永続化対象。起動中による強制OFFでは変えない）
   open: {},         // key -> 詳細を開いているか
   scanning: false,
   cleaning: false,
@@ -200,6 +201,10 @@ function setStatus(text, cls) {
   el.className = 'status' + (cls ? ' ' + cls : '');
 }
 
+function saveSelection() {
+  window.pywebview.api.save_selection(state.preferred);
+}
+
 // --- イベント --------------------------------------------------------------
 
 function bindRows() {
@@ -213,7 +218,9 @@ function bindRows() {
     });
     row.querySelector('input[type=checkbox]').addEventListener('change', (e) => {
       state.checked[key] = e.target.checked;
+      state.preferred[key] = e.target.checked;
       updateTotals();
+      saveSelection();
     });
     bindPaths(row);
   });
@@ -318,6 +325,7 @@ window.onPyEvent = function (event, data) {
     if (data.locked) state.lockedTotal += data.locked;
     state.results[data.key] = { key: data.key, size: 0, files: 0, items: [], itemsTotal: 0, denied: data.skipped, skippedRecent: 0, skippedRecentSize: 0, error: null };
     state.checked[data.key] = false;
+    state.preferred[data.key] = false;
     updateRow(data.key);
     const box = document.querySelector(`.row[data-key="${data.key}"] input[type=checkbox]`);
     if (box) box.checked = false;
@@ -329,6 +337,7 @@ window.onPyEvent = function (event, data) {
     updateDisk(state.freedTotal);
     $('btnRescan').disabled = false;
     updateTotals();
+    saveSelection();
     const extra = state.lockedTotal
       ? `（使用中の ${state.lockedTotal} 件は見送りました）` : '';
     setStatus(`${fmtSize(state.freedTotal)} を解放しました${extra}`, 'done');
@@ -341,9 +350,17 @@ window.addEventListener('pywebviewready', async () => {
   const info = await window.pywebview.api.bootstrap();
   state.targets = info.targets;
   state.disk = { ...info.disk };
-  // 対象アプリが起動中のカテゴリは、既定でオフにしておく
+  // bootstrap は通常起動時に1度だけ呼ばれるが、念のため古いキーを残さない。
+  state.checked = {};
+  state.preferred = {};
+  // 前回保存した選択（希望）があればそれを使い、無ければ既定値。
+  // 対象アプリが起動中のカテゴリは、希望に関わらず表示上はオフにしておく。
+  const saved = info.savedChecked || {};
   for (const t of state.targets) {
-    state.checked[t.key] = t.defaultOn && !(t.conflicts && t.conflicts.length);
+    state.preferred[t.key] = Object.prototype.hasOwnProperty.call(saved, t.key)
+      ? !!saved[t.key]
+      : t.defaultOn;
+    state.checked[t.key] = state.preferred[t.key] && !(t.conflicts && t.conflicts.length);
   }
   if (info.isAdmin) {
     $('adminTag').style.display = '';
@@ -357,6 +374,13 @@ window.addEventListener('pywebviewready', async () => {
   $('btnRescan').disabled = true;
 });
 
+$('btnSelectAvailable').addEventListener('click', () => {
+  // 希望(preferred)を、現在起動中でないものにだけ反映し直す。
+  for (const t of state.targets) {
+    state.checked[t.key] = state.preferred[t.key] && !(t.conflicts && t.conflicts.length);
+  }
+  renderList();
+});
 $('btnRescan').addEventListener('click', startScan);
 $('btnClean').addEventListener('click', askConfirm);
 $('btnCancel').addEventListener('click', () => $('confirm').classList.remove('show'));

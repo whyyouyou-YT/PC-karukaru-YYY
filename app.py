@@ -25,6 +25,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from cleaner import clean_target  # noqa: E402
 from scanner import CategoryResult, scan_all  # noqa: E402
+from settings import load_checked, save_checked  # noqa: E402
 from targets import Target, build_targets  # noqa: E402
 from winutil import (  # noqa: E402
     disk_usage,
@@ -191,9 +192,17 @@ class Api:
             "isAdmin": is_admin(),
             "disk": _disk(),
             "targets": [_target_payload(t) for t in _S.targets],
+            "savedChecked": load_checked(),
         }
         self.start_scan()
         return payload
+
+    def save_selection(self, checked: dict) -> bool:
+        """チェック状態（ユーザーの希望選択）を永続化する。成功したかを返す。"""
+        if not isinstance(checked, dict):
+            return False
+        sanitized = {str(k): bool(v) for k, v in checked.items()}
+        return save_checked(sanitized)
 
     def start_scan(self) -> bool:
         """バックグラウンドでスキャンを開始する。"""

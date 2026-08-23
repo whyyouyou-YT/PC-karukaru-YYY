@@ -2,7 +2,7 @@
 ; ビルド: "C:\Users\yuuma\AppData\Local\Programs\Inno Setup 6\ISCC.exe" installer.iss
 
 #define MyAppName "PC-karukaru-YYY"
-#define MyAppVersion "1.1.0"
+#define MyAppVersion "1.1.1"
 #define MyAppExeName "PC-karukaru-YYY.exe"
 #define MyAppSourceExe "dist\PC-karukaru-YYY.exe"
 
