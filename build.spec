@@ -13,7 +13,7 @@ for pkg in ("webview", "clr_loader", "pythonnet"):
 
 datas += [
     ("static", "static"),
-    ("assets/rounded_y_logo.ico", "assets"),
+    ("assets/pc_karukaru_yyy.ico", "assets"),
 ]
 
 a = Analysis(
@@ -37,7 +37,7 @@ exe = EXE(
     a.zipfiles,
     a.datas,
     [],
-    name="temp_cleaner",
+    name="PC-karukaru-YYY",
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -50,5 +50,5 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon="assets/rounded_y_logo.ico",
+    icon="assets/pc_karukaru_yyy.ico",
 )
