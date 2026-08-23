@@ -11,6 +11,7 @@ const state = {
   disk: { free: 0, total: 0, drive: 'C:' },
   freedTotal: 0,
   lockedTotal: 0,
+  theme: 'dark',
 };
 
 const $ = (id) => document.getElementById(id);
@@ -205,6 +206,20 @@ function saveSelection() {
   window.pywebview.api.save_selection(state.preferred);
 }
 
+// --- テーマ ------------------------------------------------------------
+
+function applyTheme(theme) {
+  state.theme = theme;
+  document.documentElement.setAttribute('data-theme', theme);
+  $('btnTheme').textContent = theme === 'light' ? 'ダークモードにする' : 'ライトモードにする';
+}
+
+function toggleTheme() {
+  const next = state.theme === 'light' ? 'dark' : 'light';
+  applyTheme(next);
+  window.pywebview.api.save_theme(next);
+}
+
 // --- イベント --------------------------------------------------------------
 
 function bindRows() {
@@ -350,6 +365,8 @@ window.addEventListener('pywebviewready', async () => {
   const info = await window.pywebview.api.bootstrap();
   state.targets = info.targets;
   state.disk = { ...info.disk };
+  applyTheme(info.theme === 'light' ? 'light' : 'dark');
+  $('appVersion').textContent = info.version ? `v${info.version}` : '';
   // bootstrap は通常起動時に1度だけ呼ばれるが、念のため古いキーを残さない。
   state.checked = {};
   state.preferred = {};
@@ -374,6 +391,7 @@ window.addEventListener('pywebviewready', async () => {
   $('btnRescan').disabled = true;
 });
 
+$('btnTheme').addEventListener('click', toggleTheme);
 $('btnSelectAvailable').addEventListener('click', () => {
   // 希望(preferred)を、現在起動中でないものにだけ反映し直す。
   for (const t of state.targets) {
