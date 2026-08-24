@@ -4,4 +4,4 @@ installer.iss の MyAppVersion はビルドツール（Inno Setup）側の都合
 別途手動で合わせる必要がある。リリース時はここと installer.iss の両方を更新すること。
 """
 
-APP_VERSION = "1.1.2"
+APP_VERSION = "1.1.2.1"

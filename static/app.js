@@ -393,11 +393,14 @@ window.addEventListener('pywebviewready', async () => {
 
 $('btnTheme').addEventListener('click', toggleTheme);
 $('btnSelectAvailable').addEventListener('click', () => {
-  // 希望(preferred)を、現在起動中でないものにだけ反映し直す。
+  // 起動中でないものをすべて選択する（希望していたかどうかに関わらずON）。
   for (const t of state.targets) {
-    state.checked[t.key] = state.preferred[t.key] && !(t.conflicts && t.conflicts.length);
+    if (t.conflicts && t.conflicts.length) continue;
+    state.checked[t.key] = true;
+    state.preferred[t.key] = true;
   }
   renderList();
+  saveSelection();
 });
 $('btnRescan').addEventListener('click', startScan);
 $('btnClean').addEventListener('click', askConfirm);
