@@ -164,22 +164,6 @@ def _steam_temp_roots() -> list[Root]:
     return roots
 
 
-def _nvidia_cache_roots() -> list[Root]:
-    roots: list[Root] = []
-    for sub in ("DXCache", "GLCache", "ComputeCache", "OptixCache"):
-        p = os.path.join(LOCALAPPDATA, "NVIDIA", sub)
-        if _exists(p):
-            roots.append(Root(p))
-    for p in (
-        os.path.join(LOCALAPPDATA, "D3DSCache"),
-        os.path.join(LOCALAPPDATA, "AMD", "DxCache"),
-        os.path.join(LOCALAPPDATA, "Intel", "ShaderCache"),
-    ):
-        if _exists(p):
-            roots.append(Root(p))
-    return roots
-
-
 def build_targets() -> list[Target]:
     """この PC に実在するパスだけを持つ Target のリストを返す。"""
     raw: list[Target] = [
@@ -227,14 +211,6 @@ def build_targets() -> list[Target]:
                     os.path.join(APPDATA, "discordcanary"),
                 ]
             ),
-        ),
-        Target(
-            key="shader_cache",
-            label="GPU シェーダーキャッシュ",
-            detail="NVIDIA / DirectX が生成したシェーダーキャッシュ。削除後、各ゲームの初回起動だけ少し重くなりますが自動で作り直されます。",
-            risk=RISK_SAFE,
-            default_on=True,
-            roots=_nvidia_cache_roots(),
         ),
         Target(
             key="crash_dumps",

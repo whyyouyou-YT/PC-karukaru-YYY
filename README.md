@@ -107,7 +107,6 @@ pyinstaller updater.spec --noconfirm
 - Windows 一時ファイル `C:\Windows\Temp`
 - Chrome キャッシュ（全プロファイルの Cache / Code Cache / GPUCache / Service Worker キャッシュ）
 - Discord キャッシュ
-- GPU シェーダーキャッシュ（NVIDIA DXCache/GLCache、D3DSCache 等）
 - クラッシュダンプ・エラーレポート（CrashDumps / WER）
 - サムネイル・アイコンキャッシュ
 - Windows Update の残骸（SoftwareDistribution\Download、配信最適化）
