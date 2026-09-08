@@ -260,9 +260,9 @@ def main() -> None:
         f"PC-karukaru-YYY v{APP_VERSION}" + ("（管理者）" if is_admin() else ""),
         INDEX_HTML,
         js_api=Api(),
-        width=720,
+        width=780,
         height=760,
-        min_size=(720, 560),
+        min_size=(780, 560),
         background_color=bg,
     )
     _S.window = window
